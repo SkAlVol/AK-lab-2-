@@ -4,22 +4,28 @@
 lab1:
     push {lr}         // Зберігаємо адресу повернення
 
-    mov r0, #9       // a = 9
-    mov r1, #3        // b = 3
-    mov r2, #5        // c = 5
+    mov r0, #15       // a = 15
+    mov r1, #7        // b = 7
+    mov r2, #4        // c = 4
 
-    mul r3, r0, r1    // r3 = a * b
-    cmp r3, #10       // Порівнюємо (a * b) з 10
-    bge case_ge_10    // Якщо (a * b) >= 10, переходимо до першого випадку
+    sub r3, r0, r1    // r3 = a - b
+    bmi negative_case // Якщо (a - b) < 0, переходимо до іншого випадку
 
-    // Випадок (a * b) < 10: (a * b) * c
-    mul r3, r3, r2    // r3 = (a * b) * c
-    b done            // Переходимо до завершення
+    add r3, r0, r1    // r3 = a + b (якщо a - b >= 0)
+    b compute_division // Переходимо до ділення
 
-case_ge_10:
-    orr r3, r0, r1    // r3 = a | b
-    mul r3, r3, r2    // r3 = (a | b) * c
+negative_case:
+    mov r3, r0        // r3 = a
+    sub r3, r1        // r3 = a - b
 
-done:
-    mov r5, r3        // Зберігаємо результат у r5
+compute_division:
+    bl division       // Викликаємо функцію ділення
+    mov r5, r0        // Зберігаємо результат у r5
+
     pop {pc}          // Повернення
+
+// Функція цілочисельного ділення r3 / c
+division:
+    push {lr}         // Зберігаємо адресу повернення
+    sdiv r0, r3, r2   // r0 = r3 / c
+    pop {pc}          // Повертаємося
